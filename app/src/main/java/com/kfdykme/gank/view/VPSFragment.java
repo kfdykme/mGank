@@ -16,6 +16,7 @@ import android.graphics.*;
 import android.widget.TableRow.*;
 import java.net.*;
 import android.net.*;
+import android.content.*;
 
 public class VPSFragment extends Fragment 
 {
@@ -32,7 +33,9 @@ public class VPSFragment extends Fragment
 	
 	private View view = null;
 
-	private WebView webView;
+	private LinearLayout webButtonLinearLayout;
+	
+	private kWebView kWebView;
 	
 	private TextView toBackTextView;
 
@@ -40,7 +43,7 @@ public class VPSFragment extends Fragment
 
 	private String num = "15";
 
-	private String maxPage = "0";
+	private String maxPage = "1";
 
 	private ScrollView scrollView;
 	
@@ -48,20 +51,33 @@ public class VPSFragment extends Fragment
 	
 	private Button udaButton;
 
-	public void setImageView(ImageView imageView)
+	private int currentI = 0;
+
+	public void setKWebView(kWebView kWebView)
 	{
-		this.imageView = imageView;
+		this.kWebView = kWebView;
 	}
 
-	public ImageView getImageView()
+	public kWebView getKWebView()
 	{
-		return imageView;
+		return kWebView;
 	}
-
 	
 	public void addPage(){
 		 setMaxPage( (Integer.valueOf(getMaxPage()) + 1 ) + "");
 	}
+
+	@Override
+	public void onStart()
+	{
+		// TODO: Implement this method
+		super.onStart();
+		if(udaButton.getVisibility() != View.VISIBLE)
+			displayFragment();
+	}
+
+	
+	
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -77,9 +93,10 @@ public class VPSFragment extends Fragment
 		if (view == null || linearLayout == null){
 			view = inflater.inflate(R.layout.vpsfragmentlayout,container,false);
 			linearLayout = (LinearLayout)view.findViewById(R.id.vpsfragmentlayoutLinearLayout);
-			//TextView loadingTv = (TextView)view.findViewById(R.id.vp 
-			webView = (WebView)view.findViewById(R.id.vpsfragmentlayoutWebView);
-			toBackTextView = (TextView)view.findViewById(R.id.vpsfragmentlayoutToBackTextView);
+			
+			kWebView = (kWebView)view.findViewById(R.id.vpsfragmentlayoutcom_kfdykme_gank_view_kWebView);
+//			new kWebView().initWebView(kWebView);
+//			toBackTextView = (TextView)view.findViewById(R.id.vpsfragmentlayoutToBackTextView);
 			scrollView = (ScrollView)view.findViewById(R.id.vpsfragmentlayoutScrollView);
 			udaButton =(Button)view.findViewById(R.id.vpsfragmentlayoutuDaButton);
 			udaButton.setOnClickListener(new OnClickListener(){
@@ -88,36 +105,39 @@ public class VPSFragment extends Fragment
 					public void onClick(View p1)
 					{
 						upData();
-						// TODO: Implement this method
 					}
 				});
 			
 			
-			toBackTextView.setOnClickListener(new OnClickListener(){
-
-					@Override
-					public void onClick(View view)
-					{
-
-						if(view.getVisibility() == View.VISIBLE){
-							webView.setVisibility(View.GONE);
-							view.setVisibility(View.GONE);
-							webView.loadUrl("about:blank");
-						}
-						// TODO: Implement this method
-					}
-				});
+//			toBackTextView.setOnClickListener(new OnClickListener(){
+//
+//					@Override
+//					public void onClick(View view)
+//					{
+//
+//						if(view.getVisibility() == View.VISIBLE){
+//							kWebView.setVisibility(View.GONE);
+//							view.setVisibility(View.GONE);
+//							kWebView.loadUrl("about:blank");
+//						}
+//						
+//					}
+//				});
+//				
 				
-
 		} 
+	
+		
 		return view;
 		
 	}
 
 	
 
+	
 	private void doGetApi()
 	{
+		
 		
 		final String s = getTypeString();
 		
@@ -138,7 +158,7 @@ public class VPSFragment extends Fragment
 				@Override
 				public void onFailure(Call call, IOException p2)
 				{
-				//	Toast.makeText(MainActivity.this,"onFailure",Toast.LENGTH_SHORT).show();
+					
 				}
 
 				@Override
@@ -151,38 +171,51 @@ public class VPSFragment extends Fragment
 
 					dataEntity db = gson.fromJson(res,dataEntity.class);
 
-					if ( results == null)
-						results=db.getResults();
-					else if(results.size() != db.getResults().size())
-						results.addAll(db.getResults());
-					
-					if(getActivity() != null){
-						getActivity().runOnUiThread(new Runnable(){
 
-								@Override
-								public void run()
-								{
-									Toast.makeText(getContext(),"run",Toast.LENGTH_SHORT).show();
-									displayFragment();
-									// TODO: Implement this method
-								}
-							});
-					}
- 	
-//					Log.i("getApi",Lr.get(0).getType());
+					if ( results == null){
+						results=db.getResults();
+						if(getActivity() != null)
+							getActivity().runOnUiThread(new Runnable(){
+
+									@Override
+									public void run()
+									{
+										//if ( udaButton.getVisibility() == View.INVISIBLE)
+										displayFragment();
+										Toast.makeText(getContext(), typeString +"Loading finished.",Toast.LENGTH_SHORT).show();
+									}
+								});
+
+						
+					} else if(!results.get(0).getDesc().equals( db.getResults().get(0).getDesc())) {
+						results.addAll(db.getResults());
+						if(getActivity() != null)
+							getActivity().runOnUiThread(new Runnable(){
+
+									@Override
+									public void run()
+									{
+										//if ( udaButton.getVisibility() == View.INVISIBLE)
+										addViews2Lin();
+										Toast.makeText(getContext(),"Loading finished.",Toast.LENGTH_SHORT).show();
+									}
+								});
+
+					} else 
+						results = db.getResults();
+					
 					
 				}
-
+ 	
 				
-
 			});
 
 		// TODO: Implement this method
 	}
 	public void displayFragment()
 	{
-		
 		if (getLinearLayout() != null && getResults() != null){
+			//Toast.makeText(getContext(),"display",Toast.LENGTH_SHORT).show();
 			udaButton.setVisibility(View.VISIBLE);
 			getLinearLayout().removeAllViews();
 			addViews2Lin();
@@ -192,45 +225,36 @@ public class VPSFragment extends Fragment
 	}
 	
 	public void upData(){
-		Toast.makeText(getContext(),"Updata",Toast.LENGTH_LONG).show();
 		addPage();
+		Toast.makeText(getContext(),"Loading "+getMaxPage()+ " datas.",Toast.LENGTH_SHORT).show();
 		doGetApi();
-		upDataFragment();
+		//getLinearLayout().removeAllViews();
+		
 	}
 
-	private void upDataFragment()
-	{
-		addViews2Lin();
-		// TODO: Implement this method
-	}
 	
 	private void addViews2Lin(){
 
-		TextView nTv = new TextView(getContext());
-		nTv.setText("");
-		nTv.setWidth(getLinearLayout().getWidth());
-		nTv.setHeight(30);
-		nTv.setBackgroundColor(Color.parseColor("#ff6600"));
-		getLinearLayout().addView(nTv);
 		
 		
-		for (int i = 0; i < getResults().size() ; i++){
+		for (; currentI < getResults().size() ; currentI++){
 			
 			DataText dt = new DataText(getContext());
-			dt.getDateTextView().setText(getResults().get(i).getPublishedAt());
-			dt.getDescTextView().setText(getResults().get(i).getDesc());
-			final String url = getResults().get(i).getUrl();
-			final WebView wv = getWebView();
+			dt.getDateTextView().setText(getResults().get(currentI).getPublishedAt());
+			dt.getDescTextView().setText(getResults().get(currentI).getDesc());
+			final String url = getResults().get(currentI).getUrl();
+			final WebView wv = getKWebView().getWv();
+			final kWebView kw = getKWebView();
 			final TextView btv = getToBackTextView();
 			dt.getDescTextView().setOnClickListener(new OnClickListener(){
 
 					@Override
 					public void onClick(View view)
 					{
-						if(wv.getVisibility() == View.GONE){
-							wv.setVisibility(View.VISIBLE);
-							btv.setVisibility(View.VISIBLE);
-							
+						if(kw.getVisibility() == View.GONE){
+						//	wv.setVisibility(View.VISIBLE);
+						//	btv.setVisibility(View.VISIBLE);
+							kw.setVisibility(View.VISIBLE);
 						}
 						wv.loadUrl(url);
 
@@ -238,12 +262,19 @@ public class VPSFragment extends Fragment
 
 
 				});
-			dt.getWhoTextView().setText(getResults().get(i).getWho());
+			dt.getWhoTextView().setText(getResults().get(currentI).getWho());
 			
 			getLinearLayout().addView(dt);
 		
 			}
 			
+		TextView nTv = new TextView(getContext());
+		nTv.setText("");
+		nTv.setWidth(getLinearLayout().getWidth());
+		nTv.setHeight(30);
+		nTv.setBackgroundColor(Color.parseColor("#ff6600"));
+		getLinearLayout().addView(nTv);
+		
 
 	}
 		
@@ -259,14 +290,31 @@ public class VPSFragment extends Fragment
 			
 			fragment.setArguments(bundle);
 			fragment.setTypeString(title);
-			if(fragment.getResults() == null);
-			fragment.doGetApi();
+	
+			if(fragment.getResults() == null)
+				fragment.doGetApi();
+			
 			fragment.displayFragment();
 			
 			return fragment;
 		}
 		
 		
+
+		
+		
+		
+		
+		
+	public void setImageView(ImageView imageView)
+	{
+		this.imageView = imageView;
+	}
+
+	public ImageView getImageView()
+	{
+		return imageView;
+	}
 	
 	public void setTypeString(String typeString)
 	{
@@ -309,15 +357,7 @@ public class VPSFragment extends Fragment
 		return toBackTextView;
 	}
 
-	public void setWebView(WebView webView)
-	{
-		this.webView = webView;
-	}
-
-	public WebView getWebView()
-	{
-		return webView;
-	}
+	
 
 	public void setView(View view)
 	{

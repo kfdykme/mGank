@@ -178,8 +178,10 @@ public class ViewPagerIndicator extends LinearLayout
 					}
 				}	
 		});
-		for(int i  = 0 ; i < mViewPager.getChildCount() ; i++)
+		for(int i = 0; i < mViewPager.getChildCount(); i++)
 			mViewPager.setCurrentItem(i);
+		
+		
 		mViewPager.setCurrentItem(position);
 		setHighLightTextView(position);
 	}
