@@ -11,6 +11,12 @@
 		android:layout_width="match_parent"
 		android:layout_weight="13"/>
 
+	<ProgressBar
+		android:id="@+id/kwebviewlayoutProgressBar"
+		style="?android:attr/progressBarStyleHorizontal"
+		android:layout_height="4dp"
+		android:layout_width="match_parent"/>
+
 	<LinearLayout
 		android:id="@+id/kwebviewlayoutLinearLayout"
 		android:layout_height="0dp"
@@ -23,6 +29,14 @@
 			android:layout_height="match_parent"
 			android:layout_width="0dp"
 			android:text="forw"
+			android:layout_weight="1.0"
+			android:gravity="center"/>
+		
+		<TextView
+			android:id="@+id/kwebviewlayoutLikeTextView"
+			android:layout_height="match_parent"
+			android:layout_width="0dp"
+			android:text="like"
 			android:layout_weight="1.0"
 			android:gravity="center"/>
 

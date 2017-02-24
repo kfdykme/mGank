@@ -1,4 +1,4 @@
-package com.kfdykme.gank.entity;
+package com.kfdykme.gank.bean;
 import java.util.*;
 
 public class dataEntity

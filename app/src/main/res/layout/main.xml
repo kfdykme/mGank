@@ -5,13 +5,13 @@
 	android:layout_height="match_parent"
 	android:orientation="vertical">
 
-	
-
 	<com.kfdykme.gank.view.ViewPagerIndicator
 		android:id="@+id/mViewPagerIndicator"
 		android:layout_height="40dp"
 		android:layout_width="match_parent"
 		android:background="#fe684d"/>
+
+	
 	<android.support.v4.view.ViewPager
 		android:id="@+id/mViewPager"
 		android:layout_height="match_parent"

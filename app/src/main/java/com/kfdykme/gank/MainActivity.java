@@ -7,26 +7,19 @@ import android.view.View.*;
 import android.view.*;
 import okhttp3.*;
 import org.json.*;
-import com.kfdykme.gank.entity.*;
+import com.kfdykme.gank.bean.*;
 import java.util.*;
 import com.google.gson.*;
 import android.support.v4.app.*;
 import android.support.v4.view.*;
 import com.kfdykme.gank.view.*;
 import android.webkit.*;
+import com.orm.*;
+import android.content.*;
 
 
 public class MainActivity extends FragmentActivity 
 {
-	private TextView resultTextView;
-	
-	
-	
-	private String typeString;
-	
-	private String numString;
-	
-	private String pageString;
 	
 	private ViewPager mViewPager;
 	
@@ -34,12 +27,10 @@ public class MainActivity extends FragmentActivity
 	
 	private List<String> mTitles = Arrays.asList("Android","iOS","前端","福利");
 	
-	
 	private FragmentPagerAdapter mAdapter;
 	
-	private List<result> results = null;
-	
 	private List<VPSFragment> mContents = new ArrayList<VPSFragment>();
+	
 	
 	
     @Override
@@ -48,6 +39,9 @@ public class MainActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
+		
+		SugarContext.init(this);
+		
 		
 		initViews();
 
@@ -58,10 +52,35 @@ public class MainActivity extends FragmentActivity
 		mViewPager.setAdapter(mAdapter);
 		mVPIndicator.setViewPager(mViewPager,0);
 	
+//
+//		for(VPSFragment v: mContents){
+//			v.getUdaButton().setOnLongClickListener(new OnLongClickListener(){
+//
+//					@Override
+//					public boolean onLongClick(View p1)
+//					{
+//						Intent i = new Intent(MainActivity.this,likedActivity.class);
+//						startActivity(i);
+//						return false;
+//					}
+//
+//
+//				});
+//			
+//		} 
 		
 	}
 
-		
+	@Override
+	protected void onDestroy()
+	{
+		// TODO: Implement this method
+		super.onDestroy();
+		SugarContext.terminate();
+	}
+	
+	
+	
 		
 
 	private void initDatas()
@@ -103,12 +122,23 @@ public class MainActivity extends FragmentActivity
 	{
 		mViewPager = (ViewPager)findViewById(R.id.mViewPager);
 		mVPIndicator = (ViewPagerIndicator)findViewById(R.id.mViewPagerIndicator);
+	
 		
 		// TODO: Implement this method
 	}
 
 	
 
-		//	f.setLinearLayout((LinearLayout)f.getView().findViewById(R.id.vpsfragmentlayoutLinearLayout));
+	public void setMViewPager(ViewPager mViewPager)
+	{
+		this.mViewPager = mViewPager;
+	}
+
+	public ViewPager getMViewPager()
+	{
+		return mViewPager;
+	}
+	
 		
+	
 }

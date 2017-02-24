@@ -7,7 +7,7 @@ import android.webkit.*;
 import android.widget.*;
 import com.google.gson.*;
 import com.kfdykme.gank.*;
-import com.kfdykme.gank.entity.*;
+import com.kfdykme.gank.bean.*;
 import java.io.*;
 import java.util.*;
 import okhttp3.*;
@@ -18,26 +18,13 @@ import java.net.*;
 import android.net.*;
 import android.content.*;
 
+import java.util.zip.*;
+import android.app.AlertDialog;
+import android.app.Dialog;
+
 public class VPSFragment extends Fragment 
 {
 	private String mTitle;
-	
-	public static final String BUNDLE_TITLE = "title";
-	
-	private static String mBaseUrl = "http://gank.io/api/";
-	
-	
-	private List<result> results ;
-
-	private LinearLayout linearLayout;
-	
-	private View view = null;
-
-	private LinearLayout webButtonLinearLayout;
-	
-	private kWebView kWebView;
-	
-	private TextView toBackTextView;
 
 	private String typeString ;
 
@@ -45,277 +32,279 @@ public class VPSFragment extends Fragment
 
 	private String maxPage = "1";
 
+	private String maxSearchPage ="1";
+	
+	public static final String BUNDLE_TITLE = "title";
+
+	private int startN = 0;
+
+
+	private List<result> results ;
+
+	private LinearLayout linearLayout;
+
+	private View view = null;
+
+	private kWebView kWebView;
+
+	private TextView toBackTextView;
+
 	private ScrollView scrollView;
-	
-	private ImageView imageView = null;
-	
+
 	private Button udaButton;
-
-	private int currentI = 0;
-
-	public void setKWebView(kWebView kWebView)
-	{
-		this.kWebView = kWebView;
-	}
-
-	public kWebView getKWebView()
-	{
-		return kWebView;
-	}
 	
-	public void addPage(){
-		 setMaxPage( (Integer.valueOf(getMaxPage()) + 1 ) + "");
+	private gankPresenter presenter;
+
+
+
+	private boolean isFirstLoaded(){
+		
+		if(getLinearLayout().getChildCount() < Integer.valueOf(num))
+			return true;
+		else 
+			return false;
+		
+	}
+
+
+	public void addPage()
+	{
+		setMaxPage((Integer.valueOf(getMaxPage()) + 1) + "");
 	}
 
 	@Override
 	public void onStart()
 	{
-		// TODO: Implement this method
 		super.onStart();
-		if(udaButton.getVisibility() != View.VISIBLE)
-			displayFragment();
+
+		getApi();
+		
+	}
+
+	@Override
+	public void onResume()
+	{
+		// TODO: Implement this method
+		super.onResume();
+
+		getApi();
+		
+		
+	}
+
+	@Override
+	public void onAttach(Context context)
+	{
+		// TODO: Implement this method
+		super.onAttach(context);
+
+		getApi();
 	}
 
 	
-	
-	
+
+
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		Bundle bundle = getArguments();
 
-		if (bundle != null){
+		if (bundle != null)
+		{
 			mTitle = bundle.getString(BUNDLE_TITLE);
 			typeString = mTitle;
 		}
-		
-		
-		if (view == null || linearLayout == null){
-			view = inflater.inflate(R.layout.vpsfragmentlayout,container,false);
-			linearLayout = (LinearLayout)view.findViewById(R.id.vpsfragmentlayoutLinearLayout);
-			
-			kWebView = (kWebView)view.findViewById(R.id.vpsfragmentlayoutcom_kfdykme_gank_view_kWebView);
-//			new kWebView().initWebView(kWebView);
-//			toBackTextView = (TextView)view.findViewById(R.id.vpsfragmentlayoutToBackTextView);
-			scrollView = (ScrollView)view.findViewById(R.id.vpsfragmentlayoutScrollView);
-			udaButton =(Button)view.findViewById(R.id.vpsfragmentlayoutuDaButton);
-			udaButton.setOnClickListener(new OnClickListener(){
 
+
+		
+		
+		if (view == null || linearLayout == null)
+		{
+			
+			view = inflater.inflate(R.layout.vpsfragmentlayout, container, false);
+			linearLayout = (LinearLayout)view.findViewById(R.id.vpsfragmentlayoutLinearLayout);
+
+			kWebView = (kWebView)view.findViewById(R.id.vpsfragmentlayoutcom_kfdykme_gank_view_kWebView);
+			scrollView = (ScrollView)view.findViewById(R.id.vpsfragmentlayoutScrollView);
+			udaButton = (Button)view.findViewById(R.id.vpsfragmentlayoutuDaButton);
+			
+			udaButton.setVisibility(View.VISIBLE);
+			udaButton.setOnClickListener(new OnClickListener(){
 					@Override
 					public void onClick(View p1)
 					{
 						upData();
 					}
 				});
-			
-			
-//			toBackTextView.setOnClickListener(new OnClickListener(){
-//
-//					@Override
-//					public void onClick(View view)
-//					{
-//
-//						if(view.getVisibility() == View.VISIBLE){
-//							kWebView.setVisibility(View.GONE);
-//							view.setVisibility(View.GONE);
-//							kWebView.loadUrl("about:blank");
-//						}
-//						
-//					}
-//				});
-//				
-				
-		} 
-	
-		
-		return view;
-		
-	}
-
-	
-
-	
-	private void doGetApi()
-	{
-		
-		
-		final String s = getTypeString();
-		
-		//1 . get a okHttpClient entity
-		OkHttpClient okHttpClient = new OkHttpClient();
-
-		//2 . 
-		Request.Builder builder = new Request.Builder();
-		String url = mBaseUrl+"data/"+ getTypeString()+"/"+getNum() + "/" + getMaxPage();
-		final Request request = builder.get().url(url).build();
-
-		//3.
-		Call call = okHttpClient.newCall(request);
-
-		//4 . 
-		call.enqueue(new Callback(){
-
-				@Override
-				public void onFailure(Call call, IOException p2)
-				{
-					
-				}
-
-				@Override
-				public void onResponse(Call call, Response response) throws IOException
-				{		
-				
-					String res = response.body().string();
-
-					Gson gson = new Gson();
-
-					dataEntity db = gson.fromJson(res,dataEntity.class);
-
-
-					if ( results == null){
-						results=db.getResults();
-						if(getActivity() != null)
-							getActivity().runOnUiThread(new Runnable(){
-
-									@Override
-									public void run()
-									{
-										//if ( udaButton.getVisibility() == View.INVISIBLE)
-										displayFragment();
-										Toast.makeText(getContext(), typeString +"Loading finished.",Toast.LENGTH_SHORT).show();
-									}
-								});
-
-						
-					} else if(!results.get(0).getDesc().equals( db.getResults().get(0).getDesc())) {
-						results.addAll(db.getResults());
-						if(getActivity() != null)
-							getActivity().runOnUiThread(new Runnable(){
-
-									@Override
-									public void run()
-									{
-										//if ( udaButton.getVisibility() == View.INVISIBLE)
-										addViews2Lin();
-										Toast.makeText(getContext(),"Loading finished.",Toast.LENGTH_SHORT).show();
-									}
-								});
-
-					} else 
-						results = db.getResults();
-					
-					
-				}
- 	
-				
-			});
-
-		// TODO: Implement this method
-	}
-	public void displayFragment()
-	{
-		if (getLinearLayout() != null && getResults() != null){
-			//Toast.makeText(getContext(),"display",Toast.LENGTH_SHORT).show();
-			udaButton.setVisibility(View.VISIBLE);
-			getLinearLayout().removeAllViews();
-			addViews2Lin();
-			
-		} 
-		
-	}
-	
-	public void upData(){
-		addPage();
-		Toast.makeText(getContext(),"Loading "+getMaxPage()+ " datas.",Toast.LENGTH_SHORT).show();
-		doGetApi();
-		//getLinearLayout().removeAllViews();
-		
-	}
-
-	
-	private void addViews2Lin(){
-
-		
-		
-		for (; currentI < getResults().size() ; currentI++){
-			
-			DataText dt = new DataText(getContext());
-			dt.getDateTextView().setText(getResults().get(currentI).getPublishedAt());
-			dt.getDescTextView().setText(getResults().get(currentI).getDesc());
-			final String url = getResults().get(currentI).getUrl();
-			final WebView wv = getKWebView().getWv();
-			final kWebView kw = getKWebView();
-			final TextView btv = getToBackTextView();
-			dt.getDescTextView().setOnClickListener(new OnClickListener(){
+			udaButton.setOnLongClickListener(new OnLongClickListener(){
 
 					@Override
-					public void onClick(View view)
+					public boolean onLongClick(View p1)
 					{
-						if(kw.getVisibility() == View.GONE){
-						//	wv.setVisibility(View.VISIBLE);
-						//	btv.setVisibility(View.VISIBLE);
-							kw.setVisibility(View.VISIBLE);
-						}
-						wv.loadUrl(url);
-
+						openLikedWindow();
+						
+						return false;
 					}
 
 
 				});
-			dt.getWhoTextView().setText(getResults().get(currentI).getWho());
+				
+				
+
+			presenter  = new gankPresenter(this);
 			
-			getLinearLayout().addView(dt);
+
+		} 
+
+		return view;
+
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState)
+	{
+		// TODO: Implement this method
+		super.onActivityCreated(savedInstanceState);
+
+		getApi();
 		
+	}
+	
+	
+
+	private void upData()
+	{
+		if(!isFirstLoaded())
+			addPage();
+			
+		getApi();
+		// TODO: Implement this method
+	}
+
+	private void getApi()
+	{
+		if( presenter != null
+		&&presenter.getGankmodel() != null)
+			results = presenter.getGankmodel().getResults(this);
+	}
+	
+	public void updatView(){
+		getActivity().runOnUiThread(new Runnable(){
+
+				@Override
+				public void run()
+				{
+					addViews2Lin();
+				}
+				
+			
+		});
+		
+	}
+	
+	
+	private void addViews2Lin(){
+		
+		if(getResults() != null 
+		   && (startN != (getResults().size() ))){
+
+	   		Log.i("addVIew","addViews2Lin" + getTypeString() );
+	   
+			if (isFirstLoaded()){
+				getLinearLayout().removeAllViews();
+				
+				//udaButton.setVisibility(View.VISIBLE);
+			}
+
+
+			for (; startN < getResults().size() ; startN++)
+			{
+
+				DataText dt = new DataText(getContext());
+				dt.getDateTextView().setText(getResults().get(startN).getPublishedAt());
+				dt.getDescTextView().setText(getResults().get(startN).getDesc());
+				final kWebView kw = getKWebView();
+				final result loadResult = getResults().get(startN);
+				dt.getDescTextView().setOnClickListener(new OnClickListener(){
+
+						@Override
+						public void onClick(View view)
+						{
+							if (kw.getVisibility() == View.GONE)
+							{
+								kw.setVisibility(View.VISIBLE);
+							}
+							kw.setLoadResult(loadResult);
+							kw.getWv().loadUrl(kw.getLoadResult().getUrl());
+						}
+					});
+				dt.getWhoTextView().setText(getResults().get(startN).getWho());
+
+				getLinearLayout().addView(dt);
+
+			}
+
+			if((startN % Integer.valueOf(num)) == 0 ){
+
+				TextView nTv = new TextView(getContext());
+				nTv.setText("");
+				nTv.setWidth(LayoutParams.MATCH_PARENT);
+				nTv.setHeight(30);
+				nTv.setBackgroundColor(Color.parseColor("#ff6600"));
+				getLinearLayout().addView(nTv);
+				
+				String toast;
+				
+				if(isFirstLoaded()){
+					toast = "Load "+getTypeString()+" Finished.";
+				}	else{
+					toast = "Load Page"+getMaxPage()+"'s Finished.";
+				}
+				
+				Toast.makeText(getContext(),toast,Toast.LENGTH_SHORT).show();
 			}
 			
-		TextView nTv = new TextView(getContext());
-		nTv.setText("");
-		nTv.setWidth(getLinearLayout().getWidth());
-		nTv.setHeight(30);
-		nTv.setBackgroundColor(Color.parseColor("#ff6600"));
-		getLinearLayout().addView(nTv);
-		
-
-	}
-		
-		
-		
-		public static VPSFragment newInstance(String title){
-			Bundle bundle = new Bundle();
-			
-			bundle.putString(BUNDLE_TITLE,title);
-		
-			
-			VPSFragment fragment = new VPSFragment();
-			
-			fragment.setArguments(bundle);
-			fragment.setTypeString(title);
-	
-			if(fragment.getResults() == null)
-				fragment.doGetApi();
-			
-			fragment.displayFragment();
-			
-			return fragment;
 		}
 		
-		
-
-		
-		
-		
-		
-		
-	public void setImageView(ImageView imageView)
-	{
-		this.imageView = imageView;
-	}
-
-	public ImageView getImageView()
-	{
-		return imageView;
 	}
 	
+	private void openLikedWindow(){
+		LikedDialog lD =new LikedDialog(getContext(),this);
+		lD.creatDialog().show();
+		
+	}
+
+
+	
+	
+
+	public static VPSFragment newInstance(String title)
+	{
+		Bundle bundle = new Bundle();
+
+		bundle.putString(BUNDLE_TITLE, title);
+
+
+		VPSFragment fragment = new VPSFragment();
+
+		fragment.setArguments(bundle);
+		fragment.setTypeString(title);
+		//fragment.results = fragment.presenter.getGankmodel().getResults(fragment);
+		
+		
+		return fragment;
+	}
+
+
+
+
+
+
+
+
+
+
 	public void setTypeString(String typeString)
 	{
 		this.typeString = typeString;
@@ -357,7 +346,26 @@ public class VPSFragment extends Fragment
 		return toBackTextView;
 	}
 
-	
+	public void setUdaButton(Button udaButton)
+	{
+		this.udaButton = udaButton;
+	}
+
+	public Button getUdaButton()
+	{
+		return udaButton;
+	}
+
+
+	public void setKWebView(kWebView kWebView)
+	{
+		this.kWebView = kWebView;
+	}
+
+	public kWebView getKWebView()
+	{
+		return kWebView;
+	}
 
 	public void setView(View view)
 	{
@@ -390,6 +398,16 @@ public class VPSFragment extends Fragment
 	}
 
 
+	public void setMaxSearchPage(String maxSearchPage)
+	{
+		this.maxSearchPage = maxSearchPage;
+	}
+
+	public String getMaxSearchPage()
+	{
+		return maxSearchPage;
+	}
+
 
 	public void setMTitle(String mTitle)
 	{
@@ -400,7 +418,7 @@ public class VPSFragment extends Fragment
 	{
 		return mTitle;
 	}
-	
+
 	public void setScrollView(ScrollView scrollView)
 	{
 		this.scrollView = scrollView;
@@ -410,6 +428,6 @@ public class VPSFragment extends Fragment
 	{
 		return scrollView;
 	}
-	
-	
+
+
 }

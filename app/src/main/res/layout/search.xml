@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:alpha="0.8"
+	android:background="#03a9f4">
+
+	<FrameLayout
+		android:layout_height="match_parent"
+		android:layout_width="match_parent">
+
+		<Button
+			android:background="#03a9f4"
+			android:alpha="0.7"
+			android:id="@+id/searchButton"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="Search"
+			android:textColor="#fffff0"
+			android:layout_gravity="bottom|right"
+			android:layout_margin="60dp"/>
+
+		<LinearLayout
+			android:layout_height="match_parent"
+			android:layout_width="match_parent"
+			android:orientation="vertical">
+
+			<EditText
+				android:layout_height="50dp"
+				android:layout_width="match_parent"
+				android:ems="10"
+				android:background="#FFFFFF"
+				android:hint="Search"/>
+
+			<ScrollView
+				android:layout_height="match_parent"
+				android:layout_width="match_parent">
+
+				<LinearLayout
+					android:id="@+id/SearchLinearLayout"
+					android:layout_height="wrap_content"
+					android:layout_width="match_parent"
+					android:orientation="vertical"/>
+
+			</ScrollView>
+
+		</LinearLayout>
+
+	</FrameLayout>
+
+</LinearLayout>
+
