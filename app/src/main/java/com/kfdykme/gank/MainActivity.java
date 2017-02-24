@@ -20,6 +20,7 @@ import android.content.*;
 
 public class MainActivity extends FragmentActivity 
 {
+	//scared me
 	
 	private ViewPager mViewPager;
 	
