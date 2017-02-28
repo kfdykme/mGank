@@ -18,7 +18,7 @@ import com.orm.*;
 import android.content.*;
 
 
-public class MainActivity extends FragmentActivity 
+public class KGankMainActivity extends FragmentActivity 
 {
 	//scared me
 	
@@ -30,7 +30,7 @@ public class MainActivity extends FragmentActivity
 	
 	private FragmentPagerAdapter mAdapter;
 	
-	private List<VPSFragment> mContents = new ArrayList<VPSFragment>();
+	private List<KGankFragment> mContents = new ArrayList<KGankFragment>();
 	
 	
 	
@@ -54,22 +54,6 @@ public class MainActivity extends FragmentActivity
 		mVPIndicator.setViewPager(mViewPager,0);
 	
 //
-//		for(VPSFragment v: mContents){
-//			v.getUdaButton().setOnLongClickListener(new OnLongClickListener(){
-//
-//					@Override
-//					public boolean onLongClick(View p1)
-//					{
-//						Intent i = new Intent(MainActivity.this,likedActivity.class);
-//						startActivity(i);
-//						return false;
-//					}
-//
-//
-//				});
-//			
-//		} 
-		
 	}
 
 	@Override
@@ -87,8 +71,8 @@ public class MainActivity extends FragmentActivity
 	private void initDatas()
 	{
 		for(String title:mTitles){
-			VPSFragment fragment = VPSFragment.newInstance(title);
-			fragment.setMTitle(title);
+			KGankFragment fragment = KGankFragment.newInstance(title);
+			fragment.setTitle(title);
 			mContents.add(fragment);	
 			
 		}
