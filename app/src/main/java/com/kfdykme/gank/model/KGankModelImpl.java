@@ -28,15 +28,7 @@ public class KGankModelImpl implements KGankModel
 		return mCall;
 	}
 
-	public Call getDouBanApi(){
-
-		Call mCall = new OkHttpClient()
-									.newCall(
-									new Request.Builder()
-									.url("https://api.douban.com/v2/movie/top250?start=0&count=10").build());
-		return mCall;
-		
-	}
+	
 	
 	@Override
 	public Call getGankSearch(String key, String type, int page)

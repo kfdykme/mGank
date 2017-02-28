@@ -5,6 +5,7 @@ import java.io.*;
 import com.kfdykme.gank.bean.*;
 import com.google.gson.*;
 import android.support.v4.view.*;
+import android.util.*;
 
 public class KGankMainPresenter implements KGankMainContract.Presenter
 {
@@ -38,7 +39,7 @@ public class KGankMainPresenter implements KGankMainContract.Presenter
 				public void onResponse(Call p1, Response p2) throws IOException
 				{
 					DataEntity mDE = new Gson().fromJson(p2.body().string(),DataEntity.class);
-					
+					Log.i("test",""+mDE.getResults().size());
 					mView.addViews(mDE.getResults());
 					// TODO: Implement this method
 				}
