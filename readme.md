@@ -22,7 +22,7 @@
 
 ##记录
 
-1. ####listview的简单使用
+1. listview的简单使用
 
 
  ``` Java
