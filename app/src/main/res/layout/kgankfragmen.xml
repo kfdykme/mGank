@@ -5,6 +5,14 @@
 	android:layout_height="fill_parent"
 	android:orientation="vertical">
 
+	<com.kfdykme.gank.view.KWebView
+		android:id="@+id/kgankfragmen_KWebView"
+		android:layout_height="match_parent"
+		android:layout_width="match_parent"
+		android:background="#ff6600"
+		android:visibility="gone"/>
+	
+	
 	<FrameLayout
 		android:layout_height="match_parent"
 		android:layout_width="match_parent">
@@ -47,12 +55,6 @@
 
 	</FrameLayout>
 
-	<com.kfdykme.gank.view.KWebView
-		android:id="@+id/kgankfragmen_KWebView"
-		android:layout_height="match_parent"
-		android:layout_width="match_parent"
-		android:background="#ff6600"
-		android:visibility="gone"/>
 
 </LinearLayout>
 

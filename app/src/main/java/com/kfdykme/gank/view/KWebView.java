@@ -34,14 +34,21 @@ public  class KWebView  extends LinearLayout
 	
 	private result loadResult;
 	
-	
-	
-	public KWebView(Context context){
-		this(context,null);
-	}
 
+	private KGankMainPresenter mPresenter;
+	
+	
+	public KWebView(Context context ){
+		
+		this(context, null);
+	
+	}
+	
+	
 	public KWebView(Context context, AttributeSet attrs){
 		super(context,attrs);
+		
+		
 		LayoutInflater.from(context).inflate(R.layout.kwebviewlayout, this);
 
 		wv = (WebView)findViewById(R.id.kwebviewlayoutWebView);

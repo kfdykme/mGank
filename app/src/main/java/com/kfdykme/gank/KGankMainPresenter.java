@@ -6,6 +6,7 @@ import com.kfdykme.gank.bean.*;
 import com.google.gson.*;
 import android.support.v4.view.*;
 import android.util.*;
+import android.content.*;
 
 public class KGankMainPresenter implements KGankMainContract.Presenter
 {
@@ -15,6 +16,7 @@ public class KGankMainPresenter implements KGankMainContract.Presenter
 	private KGankModelImpl mModelImpl;
 	
 	public KGankMainPresenter(KGankMainContract.View mView){
+
 		this.mView = mView;
 		this.mView.setPresenter(this);
 		mModelImpl = new KGankModelImpl();

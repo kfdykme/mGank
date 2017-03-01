@@ -10,6 +10,7 @@ public class KGankMainContract
 		void addViews(List<result> list_result);
 		void initViews(Boolean isInited);
 		Boolean isInited();
+		void openWebWindow(String url);
 	}
 	public interface Presenter extends BasePresenter {
 		void loadArticle(String type, int page);

@@ -2,20 +2,12 @@ package com.kfdykme.gank;
 
 
 import android.os.*;
-import android.widget.*;
-import android.view.View.*;
-import android.view.*;
-import okhttp3.*;
-import org.json.*;
-import com.kfdykme.gank.bean.*;
-import java.util.*;
-import com.google.gson.*;
 import android.support.v4.app.*;
 import android.support.v4.view.*;
+import android.view.*;
 import com.kfdykme.gank.view.*;
-import android.webkit.*;
 import com.orm.*;
-import android.content.*;
+import java.util.*;
 
 
 public class KGankMainActivity extends FragmentActivity 
@@ -38,7 +30,7 @@ public class KGankMainActivity extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
+//		requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main);
 		
 		SugarContext.init(this);

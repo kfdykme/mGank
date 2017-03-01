@@ -21,6 +21,7 @@ import android.content.*;
 import java.util.zip.*;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.widget.AdapterView.*;
 
 public class KGankFragment extends Fragment implements KGankMainContract.View
 {
@@ -42,10 +43,7 @@ public class KGankFragment extends Fragment implements KGankMainContract.View
 	
 	private SimpleAdapter mSimpleAdapter;
 	
-	private View view = null;
-
-	private TextView toBackTextView;
-	
+	private View view ;
 	private TextView mTextViewLoading;
 	
 	private Button udaButton;
@@ -61,7 +59,98 @@ public class KGankFragment extends Fragment implements KGankMainContract.View
 
 	
 
+	@Override
+	public void addViews( List<result> list_result)
+	{
+		if(mResults == null)
+			mResults = list_result;
+		else
+			mResults.addAll(list_result);
 
+
+		final List<result> fList_result = mResults;
+
+		getActivity().runOnUiThread(new Runnable(){
+
+				@Override
+				public void run()
+				{
+					//	Toast.makeText(getContext(),fList_result.size() +getMType() + " item load start",Toast.LENGTH_SHORT).show();
+
+					initViews(isInited());
+
+					
+					// Creat a list of HashMap to get the datas shows on listview
+					ArrayList<HashMap<String,Object>> mArrayList = new ArrayList<HashMap<String, Object>>();
+					int mId = 0;
+					for(result mResult : fList_result){
+
+						HashMap<String, Object> map = new HashMap<String, Object>();
+						map.put("Desc",mResult.getDesc());
+						map.put("Date",mResult.getPublishedAt());
+						map.put("Who",mResult.getWho());
+						map.put("Id",(++mId) +"");
+						mArrayList.add(map);
+					}
+
+					
+					mSimpleAdapter = new SimpleAdapter(
+						getContext(),
+						mArrayList,
+						R.layout.listview_dataitem,
+						new String[] {"Desc","Date","Who","Id"},
+						new int[] {R.id.listview_dataitem_descText,
+							R.id.listview_dataitem_datetext,
+							R.id.listview_dataitem_whotext,
+							R.id.listview_dataitem_IdText});
+
+					mListView.setAdapter(mSimpleAdapter);
+
+					mListView.setOnItemClickListener(new OnItemClickListener(){
+
+							@Override
+							public void onItemClick(AdapterView<?> p1, View p2, int p3, long p4)
+							{
+								LinearLayout l = (LinearLayout) p2;
+								TextView t = (TextView)l.findViewById(R.id.listview_dataitem_descText);
+
+								for(result resultb :fList_result){
+									if(resultb.getDesc().equals(t.getText().toString()))
+										openWebWindow(resultb.getUrl());
+								}
+
+
+								// TODO: Implement this method
+							}
+						});
+						
+					
+					//	Toast.makeText(getContext(),fList_result.size() + " " + getMType() + " item load finish",Toast.LENGTH_SHORT).show();
+				}
+			});
+		// TODO: Implement this method
+	}
+
+	
+
+
+	@Override
+	public void initViews(Boolean isInited)
+	{
+		if(isInited){
+			mTextViewLoading.setVisibility(View.GONE);
+			mProgressBarLoading.setVisibility(View.GONE);
+			mListView.setVisibility(View.VISIBLE);
+		}
+	}
+
+	@Override
+	public Boolean isInited()
+	{
+
+		return (mProgressBarLoading.getVisibility() == View.VISIBLE);
+	}
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -95,6 +184,9 @@ public class KGankFragment extends Fragment implements KGankMainContract.View
 						// TODO: Implement this method
 					}
 				});
+				
+			mPresenter.loadArticle(getMType(), ++mPage);	
+			
 			
 		} 
 		
@@ -111,77 +203,21 @@ public class KGankFragment extends Fragment implements KGankMainContract.View
 
 		mPresenter = new KGankMainPresenter(this);
 
-		mPresenter.loadArticle(getMType(), ++mPage);	
 		
 	}
 
-	
-	
 
 	@Override
-	public void addViews( List<result> list_result)
+	public void openWebWindow(String url)
 	{
-		if(mResults == null)
-			mResults = list_result;
-		else
-			mResults.addAll(list_result);
-		
-
-		final List<result> fList_result = mResults;
-		
-		getActivity().runOnUiThread(new Runnable(){
-
-				@Override
-				public void run()
-				{
-				//	Toast.makeText(getContext(),fList_result.size() +getMType() + " item load start",Toast.LENGTH_SHORT).show();
-					
-					initViews(isInited());
-					
-					ArrayList<HashMap<String,Object>> mArrayList = new ArrayList<HashMap<String, Object>>();
-					
-					for(result mResult : fList_result){
-
-						HashMap<String, Object> map = new HashMap<String, Object>();
-						map.put("Desc",mResult.getDesc());
-						map.put("Date",mResult.getPublishedAt());
-						map.put("Who",mResult.getWho());
-						mArrayList.add(map);
-					}
-					
-					mSimpleAdapter = new SimpleAdapter(
-						getContext(),
-						mArrayList,
-						R.layout.listview_dataitem,
-						new String[] {"Desc","Date","Who"},
-						new int[] {R.id.listview_dataitem_descText,R.id.listview_dataitem_datetext,R.id.listview_dataitem_whotext});
-					
-					mListView.setAdapter(mSimpleAdapter);
-				//	Toast.makeText(getContext(),fList_result.size() + " " + getMType() + " item load finish",Toast.LENGTH_SHORT).show();
-				}
-			});
+		mKWebView.setVisibility(View.VISIBLE);
+		mKWebView.getWv().loadUrl(url);
 		// TODO: Implement this method
 	}
 
 	
-
-	@Override
-	public void initViews(Boolean isInited)
-	{
-		if(isInited){
-			mTextViewLoading.setVisibility(View.GONE);
-			mProgressBarLoading.setVisibility(View.GONE);
-			mListView.setVisibility(View.VISIBLE);
-		}
-	}
-
-	@Override
-	public Boolean isInited()
-	{
 	
-		return (mProgressBarLoading.getVisibility() == View.VISIBLE);
-	}
-	
+
 
 	@Override
 	public void setPresenter(KGankMainPresenter presenter)
@@ -202,11 +238,14 @@ public class KGankFragment extends Fragment implements KGankMainContract.View
 		KGankFragment fragment = new KGankFragment();
 
 		fragment.setArguments(bundle);
-		fragment.setMType(title);
+		
 		return fragment;
 	}
 
 
+	
+	
+	
 
 	public void setMType(String mType)
 	{
