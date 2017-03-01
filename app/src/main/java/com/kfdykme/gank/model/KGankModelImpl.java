@@ -13,6 +13,9 @@ public class KGankModelImpl implements KGankModel
 	public Call getGankArticle(String type, int page)
 	{
 
+		//new a Call by using okhttp3 
+		//and return it.
+		
 		String mBaseUrl = "http://gank.io/api/";
 
 		final String NUM_PER_PAGE = "10";

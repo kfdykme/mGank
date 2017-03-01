@@ -73,18 +73,108 @@
 						
 ``` 
 2. sugar的简单使用
-3. okhttp3的简单使用
-4. 
-5. 
-6. 
-7.
+#####还没用到，暂不总结
 
-##备注
+3. okhttp3的简单使用
+
+
+- 导包：
+
+``` Java
+
+
+ compile 'com.squareup.okhttp3:okhttp:3.6.0'
+
+//用于转化实例
+ compile 'com.google.code.gson:gson:2.2.4'
+	
+
+```
+
+- 获取Call
+
+
+``` Java
+
+	@Override
+	public Call getGankArticle(String type, int page)
+	{
+
+		//new a Call by using okhttp3 
+		//and return it.
+		
+		String mBaseUrl = "http://gank.io/api/";
+
+		final String NUM_PER_PAGE = "10";
+
+		OkHttpClient mOkHttpClient = new OkHttpClient();
+		Request.Builder builder = new Request.Builder().url(mBaseUrl +"data/" + type +"/" + NUM_PER_PAGE + "/" + page);
+
+		final Request request =builder.build();
+
+		Call mCall = mOkHttpClient.newCall(request);
+		
+		// TODO: Implement this method
+		return mCall;
+	}
+
+
+```
+
+- 额..不知道怎么分
+
+
+``` java
+
+
+
+	@Override
+	public void loadArticle(String type, int page)
+	{
+				
+		Call mCall = mModelImpl.getGankArticle(type,page);
+		mCall.enqueue(new Callback(){
+
+				@Override
+				public void onFailure(Call p1, IOException p2)
+				{
+					
+					// TODO: Implement this method
+				}
+
+				@Override
+				public void onResponse(Call p1, Response p2) throws IOException
+				{
+					DataEntity mDE = new Gson().fromJson(p2.body().string(),DataEntity.class);
+					Log.i("test",""+mDE.getResults().size());
+					mView.addViews(mDE.getResults());
+					// TODO: Implement this method
+				}
+			});
+
+```
+
+##备注1
 
 AIDE 无法使用引入了注解的库
 有机会弄明白原因并尝试使用
 
 ###### greenDao & retrofit & maybe others need it 
+
+##备注2
+
+使用mvp模式和网络请求时，之前一直纠结于如何在model或presenter 中onResponse后再在得到返回后在view中刷新
+
+后来发现其实可以返回一个call 然后在别处使用它
+
+###### 还是有点纠结，难以说清
+
+##备注3
+
+mvp模式看了这个[博客](m.blog.csdn.net/article/details?id=52658378)后感觉有点清晰起来了。
+
+
+
 
 
 
